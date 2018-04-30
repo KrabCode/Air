@@ -152,8 +152,7 @@ public class MainApp extends PApplet{
         stroke(0);
         textSize(20);
         fill(0, 200);
-        text("frames per second: " + round(frameRate), width/2, 20*screenScaleY);
-        text("successfully landed: " + dockCounter, width/2, 50*screenScaleY);
+        text("landed: " + dockCounter, width/2, 20*screenScaleY);
     }
 
 
@@ -187,8 +186,8 @@ public class MainApp extends PApplet{
     }
 
     /*
-    * DOCK
-    * */
+     * DOCK
+     * */
 
     class Dock{
         PVector pos ;
@@ -225,7 +224,7 @@ public class MainApp extends PApplet{
                     translate(pos.x,pos.y);
                     rotate(.1f);
                     for(int i = 0; i < 3; i++){
-                    float flicker = 50*sin((frameCount-i*5)/6);
+                        float flicker = 50*sin((frameCount-i*5)/6);
                         stroke(colour, 255-flicker);
                         line(0-size/6, (-i*size/2), 0, (-i*size/2)-size/6);
                         line(0, (-i*size/2)-size/6, +size/6, -i*size/2);
@@ -403,10 +402,10 @@ public class MainApp extends PApplet{
             for(int i = route.size()-1; i > 1; i--){
                 if(i%2==0 || !isLockTarget){
                     if(route.get(i-1).visible && route.get(i).visible){
-                            PVector from = route.get(i-1).pos;
-                            PVector to = route.get(i).pos;
-                            stroke(0);
-                            line(to.x,to.y,from.x,from.y );
+                        PVector from = route.get(i-1).pos;
+                        PVector to = route.get(i).pos;
+                        stroke(0);
+                        line(to.x,to.y,from.x,from.y );
                     }
                 }
             }
@@ -571,8 +570,8 @@ public class MainApp extends PApplet{
     }
 
     /*
-    * MATH
-    * */
+     * MATH
+     * */
     private PVector getRandomBorderPos() {
         float r = random(1);
         if(r < .25f){
@@ -743,6 +742,7 @@ public class MainApp extends PApplet{
         }
 
         void draw(){
+            noTint();
             noStroke();
             fill(20,100);
             rectMode(CENTER);
@@ -801,10 +801,9 @@ public class MainApp extends PApplet{
 
         gameHUD.clear();
         Button fastForward = new Button(ButtonType.FAST_FORWARD);
-        fastForward.pos = new PVector(40,40);
-        fastForward.size = new PVector(120,120);
+        fastForward.pos = new PVector(60,60);
+        fastForward.size = new PVector(100,100);
         gameHUD.add(fastForward);
-
     }
 
     private void buttonInput() {
