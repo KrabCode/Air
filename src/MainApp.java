@@ -3,246 +3,238 @@ import processing.core.PImage;
 import processing.core.PVector;
 
 import java.util.ArrayList;
+    public class MainApp extends PApplet{
 
-public class MainApp extends PApplet{
-
-    public static void main(String[] args) {
-        PApplet.main("MainApp");
-    }
-
-    public void settings() {
-        size(1600,800,P2D);
-        noSmooth();
-//        fullScreen(P2D);
-    }
-
-    float dockingDistance;
-    enum PlaneType{THIN,BIG,HELI}
-
-    private ArrayList<Plane> planes = new ArrayList();
-    private ArrayList<Dock> docks = new ArrayList();
-    private ArrayList<Explosion> explosions = new ArrayList();
-    private Plane lockedPlane = null;
-    private PImage imgPlaneThin;
-    private PImage imgPlaneBig;
-    private PImage imgHeliBody;
-    private PImage imgHeliBlades;
-
-    private PImage imgPause;
-    private PImage imgPlay;
-    private PImage imgFastF;
-
-    enum GameState {MAIN_MENU, GAME_PLAY}
-    boolean fastForward = false;
-    float ffSpdMagMod = 2f;
-
-    private GameState state = GameState.MAIN_MENU;
-    private ArrayList<Button> mainMenu = new ArrayList();
-    private ArrayList<Button> gameHUD = new ArrayList();
-
-    private PImage imgMap;
-    private PVector center;
-    private float screenScaleX;
-    private float screenScaleY;
-    private int deadCounter = 0;
-    private int dockCounter = 0;
-
-    private float spawnFrequency;
-    private float origSpawnFrequency = 300;
-    private boolean mouseControlsPlanes = false;
-
-    public void setup() {
-        colorMode(RGB);
-        orientation(LANDSCAPE);
-        frameRate(60);
-        textAlign(CENTER, TOP);
-        imgMap = loadImage("map.jpg");
-        imgMap.resize(height,width);
-        imgPlaneThin = loadImage("planeThin_crop.png");
-        imgPlaneBig = loadImage("planeBig_crop.png");
-        imgHeliBody = loadImage("heliBody.png");
-        imgHeliBlades = loadImage("heliBlades.png");
-        imgPause = loadImage("imgPause.png");
-        imgPlay = loadImage("imgPlay.png");
-        imgFastF = loadImage("imgFastF.png");
-
-        screenScaleX = width/1200f;
-        screenScaleY = height/800f;
-
-        center = new PVector(width/2, height/2);
-        dockingDistance = 20*(screenScaleX+screenScaleY)*.8f;
-        spawnNewPlane();
-        spawnAllDocks();
-        spawnButtons();
-    }
-
-    public void draw() {
-
-        switch(state){
-            case MAIN_MENU: {
-                mouseControlsPlanes = false;
-                collectGarbage(planes);
-                trySpawnNewPlane();
-                scene();
-                updateExplosions();
-                updatePlanes();
-                updateDocks();
-                noStroke();
-                rectMode(CORNER);
-                fill(0,200);
-                rect(0,0,width,height);
-                for (Button b : mainMenu) {
-                    b.draw();
-                }
-                break;
-            }
-            case GAME_PLAY:
-                mouseControlsPlanes = true;
-                collectGarbage(planes);
-                trySpawnNewPlane();
-                scene();
-                updateExplosions();
-                updatePlanes();
-                updateDocks();
-                for (Button b : gameHUD) {
-                    b.draw();
-                }
-                break;
+        public static void main(String[] args) {
+            PApplet.main("MainApp");
         }
 
-    }
-
-    private void trySpawnNewPlane(){
-        if(fastForward){
-            spawnFrequency = origSpawnFrequency / ffSpdMagMod;
-        }else{
-            spawnFrequency = origSpawnFrequency;
+        public void settings() {
+            size(1600,800,P2D);
+            noSmooth();
+//                  fullScreen(P2D);
         }
-        if(frameCount % spawnFrequency == 0){
+
+        float dockingDistance;
+        enum PlaneType{THIN,BIG,HELI}
+
+        private ArrayList<Plane> planes = new ArrayList();
+        private ArrayList<Dock> docks = new ArrayList();
+        private ArrayList<Explosion> explosions = new ArrayList();
+        private Plane lockedPlane = null;
+        private PImage imgPlaneThin;
+        private PImage imgPlaneBig;
+        private PImage imgHeliBody;
+        private PImage imgHeliBlades;
+
+        private PImage imgPause;
+        private PImage imgPlay;
+        private PImage imgFastF;
+
+        enum GameState {MAIN_MENU, GAME_PLAY}
+        boolean fastForward = false;
+        float ffSpdMagMod = 2f;
+
+        private GameState state = GameState.MAIN_MENU;
+        private ArrayList<Button> mainMenu = new ArrayList();
+        private ArrayList<Button> gameHUD = new ArrayList();
+
+        private PImage imgMap;
+        private PVector center;
+        private float screenScaleX;
+        private float screenScaleY;
+        private int deadCounter = 0;
+        private int dockCounter = 0;
+
+        private float spawnFrequency;
+        private float origSpawnFrequency = 300;
+        private boolean mouseControlsPlanes = false;
+
+        public void setup() {
+            colorMode(RGB);
+            orientation(LANDSCAPE);
+            frameRate(60);
+            textAlign(CENTER, TOP);
+            imgMap = loadImage("map.jpg");
+            imgMap.resize(height,width);
+            imgPlaneThin = loadImage("planeThin_crop.png");
+            imgPlaneBig = loadImage("planeBig_crop.png");
+            imgHeliBody = loadImage("heliBody.png");
+            imgHeliBlades = loadImage("heliBlades.png");
+            imgPause = loadImage("imgPause.png");
+            imgPlay = loadImage("imgPlay.png");
+            imgFastF = loadImage("imgFastF.png");
+
+            screenScaleX = width/1200f;
+            screenScaleY = height/800f;
+
+            center = new PVector(width/2, height/2);
+            dockingDistance = 20*(screenScaleX+screenScaleY)*.8f;
             spawnNewPlane();
+            spawnAllDocks();
+            spawnButtons();
         }
-    }
 
-    private void updatePlanes() {
-        for(Plane f : planes){
-            if(f != null){
-                f.move();
-                f.collide();
-                f.draw();
+        public void draw() {
+
+            switch(state){
+                case MAIN_MENU: {
+                    mouseControlsPlanes = false;
+                    collectGarbage(planes);
+                    trySpawnNewPlane();
+                    scene();
+                    updateExplosions();
+                    updatePlanes();
+                    updateDocks();
+                    noStroke();
+                    rectMode(CORNER);
+                    fill(0,200);
+                    rect(0,0,width,height);
+                    for (Button b : mainMenu) {
+                        b.draw();
+                    }
+                    break;
+                }
+                case GAME_PLAY:
+                    mouseControlsPlanes = true;
+                    collectGarbage(planes);
+                    trySpawnNewPlane();
+                    scene();
+                    updateExplosions();
+                    updatePlanes();
+                    updateDocks();
+                    for (Button b : gameHUD) {
+                        b.draw();
+                    }
+                    break;
+            }
+
+        }
+
+        private void trySpawnNewPlane(){
+            if(fastForward){
+                spawnFrequency = origSpawnFrequency / ffSpdMagMod;
+            }else{
+                spawnFrequency = origSpawnFrequency;
+            }
+            if(frameCount % spawnFrequency == 0){
+                spawnNewPlane();
             }
         }
-    }
 
-    private void updateDocks(){
-        for(Dock d : docks){
-            d.draw();
-        }
-    }
-
-
-    private void scene() {
-        background(100);
-        pushMatrix();
-        translate(width/2, height/2);
-        rotate(radians(90));
-        imageMode(CENTER);
-        tint(220);
-        image(imgMap,0,0);
-        popMatrix();
-        stroke(0);
-        textSize(20);
-        fill(0, 200);
-        text("landed: " + dockCounter, width/2, 20*screenScaleY);
-    }
-
-
-
-    private void spawnNewPlane(){
-        float r = random(1);
-        if(r<.33f){
-            planes.add(new Plane(PlaneType.THIN));
-        }else if(r<.66f){
-            planes.add(new Plane(PlaneType.BIG));
-        }else{
-            planes.add(new Plane(PlaneType.HELI));
-        }
-    }
-
-    private void spawnAllDocks() {
-        docks.add(new Dock(PlaneType.THIN,new PVector(center.x-width/5.5f, center.y+height/12)));
-        docks.add(new Dock(PlaneType.HELI, new PVector(center.x+width/5.8f, center.y+height/50)));
-        docks.add(new Dock(PlaneType.BIG, new PVector(center.x+width/10f, center.y+height/6)));
-    }
-
-    private int getColorByType(PlaneType type){
-        if(type==PlaneType.BIG){
-            return color(246,83,51);
-        }else if(type == PlaneType.THIN){
-            return color(37,138,188);
-        }else if(type == PlaneType.HELI){
-            return color(80,45,194);
-        }
-        return 0;
-    }
-
-    /*
-     * DOCK
-     * */
-
-    class Dock{
-        PVector pos ;
-        float size ;
-        PlaneType type;
-        boolean lit = false;
-        int colour;
-        Dock(PlaneType dockType, PVector pos){
-            this.pos = pos;
-            this.type = dockType;
-            this.size = 70*(screenScaleX+screenScaleY)/2;
-            colour = getColorByType(type);
+        private void updatePlanes() {
+            for(Plane f : planes){
+                if(f != null){
+                    f.move();
+                    f.collide();
+                    f.draw();
+                }
+            }
         }
 
-        void draw(){
-            if(lit){
-                pushMatrix();
-                fill(colour);
+        private void updateDocks(){
+            for(Dock d : docks){
+                d.draw();
+            }
+        }
 
-                if(type == PlaneType.THIN){
-                    strokeCap(PROJECT);
-                    strokeWeight(10);
-                    translate(pos.x,pos.y);
-                    rotate(HALF_PI);
-                    for(int i = 0; i < 3; i++){
-                        float flicker = 50*sin((frameCount-i*5)/6);
+
+        private void scene() {
+            background(100);
+            pushMatrix();
+            translate(width/2, height/2);
+            rotate(radians(90));
+            imageMode(CENTER);
+            tint(220);
+            image(imgMap,0,0);
+            popMatrix();
+            stroke(0);
+            textSize(30);
+            fill(0, 200);
+            text("landed: " + dockCounter, width/2, 20*screenScaleY);
+        }
+
+
+
+        private void spawnNewPlane(){
+            float r = random(1);
+            if(r<.33f){
+                planes.add(new Plane(PlaneType.THIN));
+            }else if(r<.66f){
+                planes.add(new Plane(PlaneType.BIG));
+            }else{
+                planes.add(new Plane(PlaneType.HELI));
+            }
+        }
+
+        private void spawnAllDocks() {
+            docks.add(new Dock(PlaneType.THIN,new PVector(center.x-width/5.5f, center.y+height/12)));
+            docks.add(new Dock(PlaneType.HELI, new PVector(center.x+width/5.8f, center.y+height/50)));
+            docks.add(new Dock(PlaneType.BIG, new PVector(center.x+width/10f, center.y+height/6)));
+        }
+
+        private int getColorByType(PlaneType type){
+            if(type==PlaneType.BIG){
+                return color(246,83,51);
+            }else if(type == PlaneType.THIN){
+                return color(37,138,188);
+            }else if(type == PlaneType.HELI){
+                return color(80,45,194);
+            }
+            return 0;
+        }
+
+        /*
+         * DOCK
+         * */
+
+        class Dock{
+            PVector pos ;
+            float size ;
+            PlaneType type;
+            boolean lit = false;
+            int colour;
+            Dock(PlaneType dockType, PVector pos){
+                this.pos = pos;
+                this.type = dockType;
+                this.size = 70*(screenScaleX+screenScaleY)/2;
+                colour = getColorByType(type);
+            }
+
+            void draw(){
+                if(lit){
+                    pushMatrix();
+                    fill(colour);
+
+                    if(type == PlaneType.THIN){
+                        size *= 2;
+                        strokeCap(PROJECT);
+                        strokeWeight(10);
+                        translate(pos.x,pos.y);
+                        rotate(HALF_PI);
+                        float flicker = 50*sin((frameCount-5)/6);
                         stroke(colour,255-flicker);
-                        line(0-size/6, (-i*size/2), 0, (-i*size/2)-size/6);
-                        line(0, (-i*size/2)-size/6, +size/6, -i*size/2);
-                    }
-                } else if(type == PlaneType.BIG){
-                    strokeCap(PROJECT);
-                    strokeWeight(10);
-                    translate(pos.x,pos.y);
-                    rotate(.1f);
-                    for(int i = 0; i < 3; i++){
-                        float flicker = 50*sin((frameCount-i*5)/6);
-                        stroke(colour, 255-flicker);
-                        line(0-size/6, (-i*size/2), 0, (-i*size/2)-size/6);
-                        line(0, (-i*size/2)-size/6, +size/6, -i*size/2);
-                    }
-                }else if(type == PlaneType.HELI){
-                    /*
-                    noFill();
-                    strokeWeight(8);
-                    ellipseMode(CENTER);
-                    float flickerA = 20*sin((frameCount)/8);
-                    stroke(colour, 255-flickerA);
-                    ellipse(pos.x,pos.y, size*1.2f,size*1.2f);
-                    float flickerB = 20*sin((frameCount-5)/8);
-                    stroke(colour, 220-flickerB);
-                    ellipse(pos.x,pos.y, size*.8f,size*.8f);
-                    float flickerC = 20*sin((frameCount-10)/8);
-                    stroke(colour, 200-flickerC);
-                    ellipse(pos.x,pos.y, size*.3f,size*.3f);*/
+                        line(0-size/6, (0), 0, (0)-size/6);
+                        line(0, (0)-size/6, +size/6, 0);
+                        size /= 2;
+                    } else if(type == PlaneType.BIG) {
+                        size *= 2;
+                        strokeCap(PROJECT);
+                        strokeWeight(10);
+                        translate(pos.x, pos.y);
+                        rotate(.1f);
+                        float flicker = 50 * sin((frameCount) / 6);
+                        stroke(colour, 255 - flicker);
+                        line(0 - size / 6, (0), 0, (0) - size / 6);
+                        line(0, (0) - size / 6, +size / 6, 0);
+                        size /= 2;
+                    }else if(type == PlaneType.HELI){
+                        noFill();
+                        strokeWeight(8);
+                        ellipseMode(CENTER);
+                        float flickerA = 20*sin((frameCount)/8);
+                        stroke(colour, 255-flickerA);
+                        ellipse(pos.x,pos.y, size*1.2f,size*1.2f);
                 }
                 popMatrix();
             }
@@ -614,22 +606,6 @@ public class MainApp extends PApplet{
         return candidate;
     }
 
-    private Plane tryFindNearestPlane(ArrayList<Plane> listToSearch, float x, float y, Plane except){
-        float dist = width;
-        Plane candidate = null;
-        for(Plane f:listToSearch){
-            if(f==except){
-                continue;
-            }
-            float temp = dist(x,y,f.pos.x, f.pos.y);
-            if(temp < dist){
-                dist = temp;
-                candidate = f;
-            }
-        }
-        return candidate;
-    }
-
     private Plane tryFindNearestPlaneThatCollides(ArrayList<Plane> listToSearch, float x, float y, Plane p){
         float dist = width;
         Plane candidate = null;
@@ -718,7 +694,6 @@ public class MainApp extends PApplet{
     }
 
     public void mouseReleased() {
-
         locked = false;
         println("unlock");
         locked = false;
@@ -726,9 +701,7 @@ public class MainApp extends PApplet{
             lockedPlane.isLockTarget = false;
         }
         lockedPlane = null;
-
         println("MOUSE RELEASED");
-
     }
     enum ButtonType{NEW_GAME, FAST_FORWARD}
 
@@ -743,14 +716,15 @@ public class MainApp extends PApplet{
 
         void draw(){
             noTint();
-            noStroke();
-            fill(20,100);
+            stroke(255, 100);
+            fill(20,200);
             rectMode(CENTER);
             rect(pos.x,pos.y,size.x,size.y);
             fill(255);
             if(type == ButtonType.NEW_GAME){
-                textSize(20);
+                textSize(28);
                 text("New game",pos.x,pos.y);
+                text("Drag planes to their runways", pos.x,pos.y-size.y*2);
             }else if(type == ButtonType.FAST_FORWARD && fastForward){
                 textSize(28);
                 text(">", pos.x,pos.y);
